@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .registerdiv
+    {
+        width:500px;
+        margin: auto;
+        padding: auto;
+    }
+</style>
+<body>
+    {% extends 'user/base.html' %}
+    {% block showdata %}
+  <div class="registerdiv">
+      <h2 class="mt-3 ps-5 ms-5">User Register </h2>
+      <form method="post">
+          {% csrf_token %}
+       <div class="mt-4">
+         <input type="text" class="form-control bg-white"  placeholder="First Name" name="{{ user_register.first_name.html_name }}">
+       </div>
+
+      <div class="mt-4">
+         <input type="text" class="form-control bg-white"  placeholder="Last Name" name="{{ user_register.last_name.html_name }}">
+       </div>
+          <div class="mt-4">
+         <input type="password" class="form-control bg-white"  placeholder="password" name="{{ user_register.password.html_name }}">
+       </div>
+          <div class="mt-4">
+         <input type="email" class="form-control bg-white"  placeholder="email" name="{{ user_register.email.html_name }}">
+       </div>
+          <div class="mt-4">
+         <input type="number" class="form-control bg-white"  placeholder="number" name="{{ user_register.mobile_number.html_name }}">
+       </div>
+
+
+      <div class="mb-4 mt-3" style="text-align:center;">
+          <button type="submit" class="btn btn-primary" value="submit" id="submit" >save</button>
+      </div>
+      </form>
+</div>
+
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+
+{% extends 'user/base.html' %}
+
+{% block showdata %}
+{% load static %}
+
+                <form method="post" class="form-control">
+                     {% csrf_token %}
+                    <div class="input-group mb-3 ms-5 ps-5">
+                        <span class="input-group-text me-3">SuperAdmin Name</span>
+                        {{ form.username }}
+                    </div>
+
+                    <div class="input-group mb-3 ms-5 ps-5">
+
+                        <span class="input-group-text me-3">password</span>
+                         {{ form.password }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+{% endblock %}

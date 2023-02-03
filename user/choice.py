@@ -1,0 +1,22 @@
+AVAILABLE = "AVAILABLE"
+OCCUPIED = "OCCUPIED"
+MAINTENANCE = "MAINTENANCE"
+INACTIVE = "INACTIVE"
+
+
+SYSTEM_AVAILABILITY_CHOICES = (
+    (AVAILABLE, "AVAILABLE"),
+    (OCCUPIED, "OCCUPIED"),
+    (MAINTENANCE, "MAINTENANCE"),
+    (INACTIVE, "INACTIVE"),
+)
+
+KB = "KB"
+MB = "MB"
+TB = "TB"
+GB = "GB"
+RAM_UNITS = ((KB, "KB"),
+             (MB, "MB"),
+             (GB, "GB"),
+             (TB, "TB")
+             )

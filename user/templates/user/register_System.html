@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .registerdiv
+    {
+        width:900px;
+        margin: auto;
+        padding: auto;
+    }
+</style>
+<body>
+    {% extends 'user/base.html' %}
+    {% block showdata %}
+  <div class="registerdiv">
+      <h2 class="mt-3 ps-5 ms-5">Configure A New System Register</h2>
+      <form method="post">
+          {% csrf_token %}
+       <div class="mt-4">
+         <input type="text" class="form-control bg-white"  placeholder="System Name" name="{{ register_system.name.html_name }}">
+       </div>
+      <div class="mt-4">
+         <input type="text" class="form-control bg-white"  placeholder="Company Name" name="{{ register_system.company.html_name }}">
+       </div>
+      <div class="mt-4">
+         <input type="text" class="form-control bg-white"  placeholder="Ram" name="{{ register_system.ram.html_name }}">
+       </div>
+          <div class="mt-4">
+              <select class="form-control bg-white"  name="{{ register_system.unit.html_name}}">
+                  <option disabled>----</option>
+                  <option>KB</option>
+                  <option>MB</option>
+                  <option>GB</option>
+                  <option>TB</option>
+              </select>
+          </div>
+      <div class="mb-4 mt-3" style="text-align:center;">
+          <button type="submit" class="btn btn-primary" value="submit" id="submit" >save</button>
+      </div>
+      </form>
+</div>
+
+    {% endblock %}
+</body>
+</html>

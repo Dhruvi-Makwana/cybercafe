@@ -1,0 +1,25 @@
+        {% extends 'user/base.html' %}
+        {% load static %}
+
+        {% block showdata %}
+               {% if request.user.is_superuser %}
+        <div class="addsystembtn">
+            <a href="../system_register/" class="btn" style="float:right;background:dodgerblue; color:white;">Add System</a>
+        </div>
+        <br>
+        <table id="system_data" class="table table-striped display" style="width:100%">
+           <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+            </tfoot>
+    </table>
+    <script type="text/javascript" src="{% static 'js/system_data.js' %}"></script>
+        {% else %}
+
+    <h1>You are not a superuser</h1>
+
+{% endif %}
+    {% endblock %}
