@@ -1,4 +1,4 @@
-function configDataTable(id, url, columns)
+function configDataTable(id, url)
 {
    $(id).DataTable
  ({
@@ -9,7 +9,7 @@ function configDataTable(id, url, columns)
     "serverSide": true,
     "processing": true,
     "pageLength": 10,
-    "lengthChange" : true,
+
     "order": [0, "asc"],
 
         ajax: {
@@ -17,7 +17,7 @@ function configDataTable(id, url, columns)
                 dataSrc: 'data'
 
                },
-      columns: columns,
+      
       'columnDefs': [{
          'targets': 0,
          'searchable': false,
@@ -29,6 +29,24 @@ function configDataTable(id, url, columns)
       }],
 
  });
+
+}
+
+function getAjax(url, callback=null){
+
+    $.ajax({
+        type:'GET',
+        url: url,
+            dataType: 'json',
+            dataSrc: 'data',
+            success:function (data){
+                if(callback){
+                    callback(data.data)
+                }
+        },
+        });
+
+
 
 }
 

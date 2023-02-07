@@ -1,13 +1,38 @@
 {% extends 'user/base.html' %}
     {% block showdata %}
 {% load static %}
-        <table id="display_user" class="table table-striped display" style="width:100%">
+
+<!--    <script type="text/javascript" src="{% static 'js/show_user_data.js' %}"></script>-->
+     <table id="display_user" class="table table-striped display" style="width:100%">
+             <thead>
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Last_name</th>
+                <th>Mobile</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr data-id="{{data.id}}" >
+            {% for data in object_list %}
+<!--            <td><button type="button" class="btn btn-primary" data-toggle="modal" id="{{data.id}}" >Assign</button></td>-->
+            <td>{{data.id}}</td>
+            <td>{{data.first_name}}</td>
+            <td>{{data.last_name}}</td>
+            <td>{{data.mobile_number}}</td>
+
+            </tr>
+            {% endfor %}
+            </tbody>
             <tfoot>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
             </tfoot>
         </table>
-    <script type="text/javascript" src="{% static 'js/show_user_data.js' %}"></script>
+<script>
+           $('#display_user').DataTable();
+</script>
  {% endblock %}

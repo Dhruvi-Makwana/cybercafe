@@ -1,25 +1,180 @@
         {% extends 'user/base.html' %}
         {% load static %}
-
-        {% block showdata %}
+             {% block showdata %}
                {% if request.user.is_superuser %}
-        <div class="addsystembtn">
+
+                 <div class="addsystembtn">
             <a href="../system_register/" class="btn" style="float:right;background:dodgerblue; color:white;">Add System</a>
-        </div>
+             <button class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</button>
+                 </div>
         <br>
         <table id="system_data" class="table table-striped display" style="width:100%">
-           <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-            </tfoot>
-    </table>
-    <script type="text/javascript" src="{% static 'js/system_data.js' %}"></script>
-        {% else %}
+            <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>RAM</th>
+                <th>Unit</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr data-id="{{data.id}}" >
+                {% for data in object_list %}
+<!--                <td><a href ="../assign_system1/" type="button" class="btn btn-primary" data-toggle="modal" id="{{data.id}}" >Assign</a></td>-->
+                <td><input type="checkbox" class="checkbox" value="{{data.id}}"></td>
+                <td id="system">{{data.name__name}}</td>
+                <td>{{data.name__company}}</td>
+                <td>{{data.name__ram}}</td>
+                <td>{{data.name__unit}}</td>
+                <td>{{data.status}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                </tfoot>
+            </table>
 
-    <h1>You are not a superuser</h1>
+        {% endif %}
 
-{% endif %}
-    {% endblock %}
+
+
+
+ <div class="mt-4">
+     <div class="modal fade" id="assign" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Assign System</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                    <form method="post" id="formId">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="registerdiv">
+                               
+                                <div class="mt-4">
+                                    <select class="form-control bg-white" id="testModalSelect" name="{{ assign_system.system_user.html_name}}">
+                                      
+                                    </select>
+                                </div>
+
+
+                                <div class="mt-4">
+                                    <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}">
+                                </div>
+
+
+                                <div class="mt-4">
+                                    <input type="datetime-local" class="form-control bg-white" id="finish_time"  placeholder="Finish_time" name="{{ assign_system.finish_time.html_name }}">
+                                </div>
+                            </div>
+
+                         </div>
+                        <div class="modal-footer">
+<!--                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                            <button type="submit" class="btn btn-primary" value="submit" id="submit">Assign system</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+
+            function bindDynamicOptions(allUsers){
+                var optionStr = ""
+                for (user of allUsers){
+                    optionStr += '<option class="userdata" value="' + user.id.toString() + '">' +(user.full_name) +  '</option>';
+                }
+                $("#testModalSelect").append(optionStr)
+            }
+
+    function loadUsers(){
+        getAjax('../get_user/', bindDynamicOptions)
+    }
+
+
+       {% comment %} $('#system_data').DataTable(); {% endcomment %}
+
+       $('#link').on( "click", function() {
+        loadUsers()
+       $('#assign').modal('show');
+});
+
+$(document).on('click', '#submit', function(e) {
+
+    var selectedSystems = {
+        systems:[],
+        users: $('#testModalSelect').val(),
+        start_time: $('#assign_time').val(),
+        finish_time: $('#finish_time').val()
+    };
+   
+
+    $('input[type=checkbox]').each(function () {
+        if (this.checked) {
+            
+            selectedSystems[systems].push($(this).val());
+        }
+});
+alert(selectedvalues);
+
+//alert(selectedvalues);
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: selectedSystems,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (){
+            alert('Getting the data.')
+            },
+            
+        })
+        
+    })
+
+
+</script>
+       {% endblock %}
+    {% comment %}
+    formData.append('system_user', $('#usertestModalSelectname').val()) 
+    formData.append('system', $('#system').val())
+    formData.append('assign_time', $('#assign_time').val())
+    formData.append('finish_time', $('#finish_time').val())
+    console.log(formData, "formData")
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}') {% endcomment %}
+
+
+
+
+
+    {% comment %} if (field.name.includes("checkbox") && $('input[name="'+field.name+'"]').prop("checked"))
+    {
+    } {% endcomment %}
+
+
+{% comment %} 
+    var checker = document.getElementsByClassName('checkbox');
+    var btn = document.getElementById('link');
+    checker.onchange = function(){
+        if(this.checked){
+            btn.disabled = false;
+        } else {
+            btn.disabled = true;
+        }
+        
+        } {% endcomment %}
