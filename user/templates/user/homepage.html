@@ -2,12 +2,13 @@
         {% load static %}
              {% block showdata %}
                {% if request.user.is_superuser %}
-
+             
+                
                  <div class="addsystembtn">
-            <a href="../system_register/" class="btn" style="float:right;background:dodgerblue; color:white;">Add System</a>
-             <button class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</button>
-                 </div>
-        <br>
+                    <a href="#" class="btn add_system" style="float:right;background:dodgerblue; color:white;">Add System</a>
+                    <button class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</button>
+                    </div>
+            <br>
         <table id="system_data" class="table table-striped display" style="width:100%">
             <thead>
             <tr>
@@ -17,72 +18,202 @@
                 <th>RAM</th>
                 <th>Unit</th>
                 <th>Status</th>
+                <th>Update</th>
             </tr>
             </thead>
             <tbody>
-            
+                
                 {% for data in object_list %}
-                <tr data-id="{{data.id}}" >
-                <td><input type="checkbox" class="checkbox" value="{{data.id}}"></td>
-                <td id="system">{{data.name__name}}</td>
-                <td>{{data.name__company}}</td>
-                <td>{{data.name__ram}}</td>
-                <td>{{data.name__unit}}</td>
-                <td>{{data.status}}</td>
+                <tr> <!--data.name__id}-->
+                <td id="configure_{{data.name__id}}" value={{data.name__id}}><input type="checkbox" class="checkbox"></td>
+                <td id="system_{{data.name__id}}">{{data.name__name}}</td>
+                <td id="company_{{data.name__id}}">{{data.name__company}}</td>
+                <td id="ram_{{data.name__id}}">{{data.name__ram}}</td>
+                <td id="unit_{{data.name__id}}">{{data.name__unit}}</td>
+                <td id="status_{{data.status}}">{{data.status}}</td>
+                <td><a class="btn update_link" id="getsystem_{{data.id}}" value={{data.id}}><img src="{% static 'images/pensil.png' %}" height="20px" width="20px"></a></td>
                 </tr>
                 {% endfor %}
-            </table>
-
+        </table>
         {% endif %}
 
 
 
 
+<!--
+    Update system details modal showing here
+-->
+
  <div class="mt-4">
+    <div class="modal fade" id="update_system_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="exampleModalLabel">Update your System Details Here...
+                   </h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+
+
+               <div>
+                   <div class="modal-body">
+                       <div class="registerdiv">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mt-4">
+                                <input type="text" id="systemUpdate_id" class="form-control bg-white" style="display:none;">
+                            </div>
+                           
+                            
+                            <div class="mt-4">
+                                <input type="text" id="update_name" class="form-control bg-white"  placeholder="Update System Name">
+                            </div>
+                            <div class="mt-4">
+                                <input type="text" id="update_company_name" class="form-control bg-white"  placeholder="Update Company Name">
+                            </div>
+                             <div class="mt-4">
+                                <input type="number" id="update_ram" class="form-control bg-white"  placeholder="Update Ram">
+                            </div>
+                            <div class="mt-4">
+                                <select class="form-control bg-white" id="update_unit">
+                                  <option disabled>----</option>
+                                  <option>KB</option>
+                                  <option>MB</option>
+                                  <option>GB</option>
+                                  <option>TB</option>
+                              </select>
+                            <div class="mt-4">
+                                <select class="form-control bg-white" id="update_status">
+                                    <option disabled>----</option>
+                                    <option>AVAILABLE</option>
+                                    <option>OCCUPIED</option>
+                                    <option>MAINTENANCE</option>
+                                    <option>INACTIVE</option>
+                                </select>
+                            </div>
+
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                    <button onClick="updatesystemPost()"  type="button" class="btn btn-primary" name="updatesystem" id="updatebtn">Update</button>
+                   </div>
+                </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+
+
+<!--
+    Assign System Modal 
+-->
+
+<div class="mt-4">
      <div class="modal fade" id="assign" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Assign System</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <h5 class="modal-title" id="exampleModalLabel">Assign System
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                    <form method="post" id="formId">
-                        {% csrf_token %}
-                        <div class="modal-body">
-                            <div class="registerdiv">
-                               
-                                <div class="mt-4">
-                                    <select class="form-control bg-white" id="testModalSelect" name="{{ assign_system.system_user.html_name}}">
+
+
+                <div method="post" id="formId">
+                    <div class="modal-body">
+                        <div class="registerdiv">
+                            <div class="mt-4">
+                                <select class="form-control bg-white" id="testModalSelect" name="{{ assign_system.system_user.html_name}}">
                                       
-                                    </select>
-                                </div>
+                                </select>
+                             </div>
 
 
-                                <div class="mt-4">
-                                    <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}">
-                                </div>
-
-
-                                <div class="mt-4">
-                                    <input type="datetime-local" class="form-control bg-white" id="finish_time"  placeholder="Finish_time" name="{{ assign_system.finish_time.html_name }}">
-                                </div>
+                            <div class="mt-4">
+                                <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}">
                             </div>
 
-                         </div>
-                        <div class="modal-footer">
-<!--                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-                            <button type="submit" class="btn btn-primary" value="submit" id="submit">Assign system</button>
+
+                            <div class="mt-4">
+                                <input type="datetime-local" class="form-control bg-white" id="finish_time"  placeholder="Finish_time" name="{{ assign_system.finish_time.html_name }}">
+                            </div>
                         </div>
-                    </form>
-                  </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button onClick="submitPost()" type="button" class="btn btn-primary" value="submit" id="submit">Assign system</button>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<!--
+    Add System on modal showing here
+-->
+
+<div class="mt-4">
+    <div class="modal fade" id="add_system_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="exampleModalLabel">Add System Here
+                   </h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+
+
+               <div> <!--method="post"-->
+                   <div class="modal-body">
+                       <div class="registerdiv">
+                        <form method="POST" id="add_system_formId" action="{% url 'user:homepage' %} ">
+                            {% csrf_token %}
+                              <div class="mt-4">
+                                   <input type="text" id="systemname" class="form-control bg-white"  placeholder="System Name" name="{{ register_system.name.html_name }}">
+                              </div>
+                              <div class="mt-4">
+                                  <input type="text" id="company_name" class="form-control bg-white"  placeholder="Company Name" name="{{ register_system.company.html_name }}">
+                              </div>
+                              <div class="mt-4">
+                                  <input type="text" id="ram" class="form-control bg-white"  placeholder="Ram" name="{{ register_system.ram.html_name }}">
+                              </div>
+                              <div class="mt-4">
+                                  <select class="form-control bg-white" id="unit"  name="{{ register_system.unit.html_name}}">
+                                    <option disabled>----</option>
+                                    <option>KB</option>
+                                    <option>MB</option>
+                                    <option>GB</option>
+                                    <option>TB</option>
+                                </select>
+                            </div>
+                              </div>
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                    <button onClick="addsystemPost()"  type="button" class="btn btn-primary" value="addsystembtn" name="addsystembtn" id="addsytemid">Register</button>
+                    </div>
+                </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+
 
 
         <script>
+
+            $('#system_data').DataTable();
 
 
 
@@ -94,52 +225,149 @@
                 $("#testModalSelect").append(optionStr)
             }
 
-    function loadUsers(){
-        getAjax('../get_user/', bindDynamicOptions)
-    }
+            function loadUsers(){
+                getAjax('../get_user/', bindDynamicOptions)
+             }
 
-       $('#system_data').DataTable();
 
        $('#link').on( "click", function() {
         loadUsers()
        $('#assign').modal('show');
 });
 
-
-$(document).on('click', '#submit', function(e) {
-
-    var selectedSystems = {
-        systems:[],
-        users: $('#testModalSelect').val(),
-        start_time: $('#assign_time').val(),
-        finish_time: $('#finish_time').val()
-    };
-   
-
-    $('input[type=checkbox]').each(function () {
-        if (this.checked) {
-            
-            selectedSystems[systems].push($(this).val());
-        }
+ 
+$('.add_system').on("click",function()
+{
+    $('#add_system_modal').modal('show');
+    $
 });
-console.log(selectedvalues);
 
-//alert(selectedvalues);
+   
+    
+ $('.update_link').on("click",function()
+{
+    $('#update_system_modal').modal('show');
+    
+    var getid = $(this).attr('value');
+   
+    
+    var system_name = $("#system_"+getid).text()
+    var company_name= $("#company_"+getid).text()
+    var ram = $("#ram_"+getid).text()
+    var unit = $("#unit_"+getid).text()
+    var status = $("#status_"+getid).text()
+
+
+    document.getElementById("systemUpdate_id").value = getid
+    document.getElementById("update_name").value = system_name
+    document.getElementById("update_company_name").value = company_name
+    document.getElementById("update_ram").value = ram
+    document.getElementById("update_unit").value = unit
+  
+
+
+
+ 
+}); 
+
+
+function updatesystemPost()
+{   
+    var formData = new FormData();
+    formData.append('id', $('#systemUpdate_id').val())
+    formData.append('name__name', $('#update_name').val()),
+    formData.append('name__company', $('#update_company_name').val()),
+    formData.append('name__ram', $('#update_ram').val()),
+    formData.append('name__unit', $('#update_unit').val()),
+    formData.append('status', $('#update_status').val()),
+    
+
+          $.ajax({
+              type: 'POST',
+              headers: {'X-CSRFToken': '{{ csrf_token }}'},
+              url: "/systems/",
+              data: formData,
+              cache: false,
+              processData: false,
+              contentType: false,
+              success: function (){
+                  alert('Update the data.')
+              },
+              error: function(xhr, errmsg, err) {
+                  console.log(xhr.status + ":" + xhr.responseText)
+              }
+          })
+}
+
+
+
+
+function submitPost(){
+
+
+    let selectedSystems = {
+        "systems":[],
+        "users": $('#testModalSelect').val(),
+        "start_time": $('#assign_time').val(),
+        "finish_time": $('#finish_time').val(),
+        
+    }; 
+
+    $('input[type=checkbox]').each(function ()
+     {
+        if (this.checked)
+         {
+            
+            selectedSystems['systems'].push($(this).val());
+           
+            $(this).closest("tr").css('background-color', 'yellow !important');
+
+        }
+    });
 
     $.ajax({
         type: 'POST',
-        url: url,
-        data: selectedSystems,
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function (){
-            alert('Getting the data.')
-            },
+        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+        url: "/systems/",
+        data: JSON.stringify(selectedSystems),
+        contentType: 'application/json',
+        success: function (data){
+            alert('Created.')
+        },
             
-        })
-        
     })
+}
+
+
+
+
+
+
+function addsystemPost()
+{
+      var formData = new FormData();
+        formData.append('name', $('#systemname').val())
+        formData.append('company', $('#company_name').val())
+        formData.append('ram', $('#ram').val())
+        formData.append('unit', $('#unit').val())
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+          $.ajax({
+              type: 'POST',
+              url: "/systems/",
+              data: formData,
+              cache: false,
+              processData: false,
+              contentType: false,
+              success: function (){
+                  alert('Created the data.')
+              },
+              error: function(xhr, errmsg, err) {
+                  console.log(xhr.status + ":" + xhr.responseText)
+              }
+          })
+}
+
+
 
 
 </script>

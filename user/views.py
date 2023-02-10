@@ -1,7 +1,12 @@
-from django.shortcuts import render
-from .models import System, User
+import json
+
+from django.shortcuts import render,get_object_or_404
+from pip._internal.cli import status_codes
+
+from .choice import AVAILABLE
+from .models import System, User, System_User_Histories,ConfigureSystems
 from django.http import JsonResponse
-from django.db.models import F, Value, Func
+from django.db.models import Value
 from django.db.models import CharField
 from django.db.models.functions import Concat
 from django.views.generic.list import MultipleObjectMixin
@@ -10,32 +15,53 @@ from django.contrib.auth.views import (
    )
 from django.views.generic import ListView, CreateView, UpdateView
 from .forms import Register_System, User_Register, AssignSystem, AdminLoginForm, AddSystem
+from django.views.generic.edit import ModelFormMixin, ProcessFormView
 
 
-class GetSystemData(CreateView,MultipleObjectMixin):
+class GetSystemData(CreateView, MultipleObjectMixin, ModelFormMixin):
     template_name = "user/homepage.html"
-    model = User
+    model = System_User_Histories, ConfigureSystems, System
     form_class = AssignSystem
-    object_list = System.objects.values('id', 'name__name', 'name__company', 'name__ram', 'name__unit', 'status' )
+    object_list = System.objects.values('id', 'name__id', 'name__name', 'name__company', 'name__ram', 'name__unit', 'status')
 
     def post(self, request, *args, **kwargs):
 
-        assign_system = request.POST.getlist('data')
-        for getdata in assign_system:
-            postdata_copy = request.POST.copy()
-            postdata_copy['getdata'] = getdata
-            add_history = AssignSystem(postdata_copy)
-            if add_history.is_valid():
-                add_history.save()
-        return render(request, "user/homepage.html", {"assign_system": assign_system})
+        obj = get_object_or_404(System, id=request.POST.get("id"))
 
-    # def get_queryset(self, *args, **kwargs):
-    #     system_data = System.objects.values('id', 'name__name', 'name__company', 'name__ram', 'name__unit', 'status' )
-    #
-    #     return system_data
+        obj.name = request.POST.get("name__name")
+        obj.company = request.POST.get("name__company")
+        obj.ram = request.POST.get("name__ram")
+        obj.unit = request.POST.get("name__unit")
+        obj.status = request.POST.get("status")
+        obj.save()
+        # set
+
+
+        register_system = Register_System(request.POST)
+        if register_system.is_valid():
+            System.objects.create(name= register_system.save(), status=AVAILABLE)
+            return render(request, "user/register_System.html", {"register_system": register_system})
+
+        getdata = json.loads(request.body)
+        user = getdata.get('users')
+        get_list_system = getdata.get('systems')
+        s_time = getdata.get('start_time')
+        e_time = getdata.get('finish_time')
+        data_dict = {"system_user_id": user, "assign_time": s_time, "finish_time": e_time}
+
+
+        def createdata(system):
+            data_dict.update({"system_id": system})
+            return System_User_Histories(**data_dict)
+
+        result = list(map(createdata, get_list_system))
+        System_User_Histories.objects.bulk_create(result)
+        return render(request, "user/homepage.html", {"assign_system": getdata})
 
     def get_user(request):
-        user_data = User.objects.annotate(full_name=Concat('id', Value(' '), 'first_name', Value(' '), 'last_name', Value(' ('), ('email'), Value(') '), output_field=CharField())).values('id','full_name')
+        user_data = User.objects.annotate(
+            full_name=Concat('id', Value(' '), 'first_name', Value(' '), 'last_name', Value(' ('), ('email'),
+                             Value(') '), output_field=CharField())).values('id', 'full_name')
         return JsonResponse({'data': list(user_data)}, safe=False)
 
 
@@ -47,26 +73,6 @@ class UserData(ListView):
     def get_queryset(self):
         data = User.objects.values('id', 'first_name', 'last_name', 'mobile_number')
         return data
-    # def get_userdata(self, request):
-    #     getuser = []
-    #     end = int(request.GET.get("length", 100))
-    #     start = int(request.GET.get("start", 0))
-    #     user_data = User.objects.all().values('id', 'first_name', 'last_name', 'mobile_number')
-    #     user = User.objects.all()
-    #     if getuser:
-    #         filtered_user = user.filter(getuser__icontains=getuser)[start: end]
-    #     else:
-    #         filtered_user = user.filter()[start: end]
-    #
-    #     data = {
-    #         "draw": 1,
-    #         "recordsTotal": user.count(),
-    #         "recordsFiltered": filtered_user.count(),
-    #         "data": list(filtered_user.values('id', 'first_name', 'last_name', 'mobile_number'))
-    #     }
-    #
-    #     return JsonResponse({'data': list(user_data)}, safe=False)
-        # return JsonResponse({'data': list(user_data)}, safe=False)
 
 
 class RegisterSystem(CreateView):
@@ -105,9 +111,9 @@ class User_register(CreateView):
 
 
 class SystemUpdate(UpdateView):
-    success_url = "../../homepage/"
-    model = System
-    fields = ['status']
+    success_url = "../../systems"
+    model = ConfigureSystems
+    fields = ['name', 'company', 'ram', 'unit']
     template_name = "user/system_update.html"
 
 
@@ -116,28 +122,6 @@ class UserUpdate(UpdateView):
     model = User
     fields = ['first_name', 'last_name', 'email']
     template_name = "user/user_update.html"
-
-
-# class ManageHistory(CreateView):
-#     form_class = AssignSystem
-#
-#     def get(self, request, *args, **kwargs):
-#         return render(request, "user/homepage.html", {"assign_system": AssignSystem()})
-#
-#     def post(self, request, *args, **kwargs):
-#
-#         assign_system = request.POST.getlist('data')
-#         for getdata in assign_system:
-#             postdata_copy = request.POST.copy()
-#             postdata_copy['getdata'] = getdata
-#             form2 = AssignSystem(postdata_copy)
-#             if form2.is_valid():
-#                 form2.save()
-
-
-        # if assign_system.is_valid():
-        #     assign_system.save()
-        # return render(request, "user/homepage.html", {"assign_system": assign_system})
 
 
 class AdminLogin(LoginView):
@@ -160,3 +144,12 @@ class Add_System(CreateView):
             add_system.save()
 
         return render(request, "user/add_system.html", {"add_system": add_system})
+
+
+class System_assign_listing(ListView):
+    model = System_User_Histories
+    template_name = "user/system_listing.html"
+    context_object_name = 'system_list'
+
+    def get_queryset(self):
+        return System_User_Histories.objects.all()

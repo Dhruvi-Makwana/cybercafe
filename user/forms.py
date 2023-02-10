@@ -27,7 +27,6 @@ class Register_System(forms.ModelForm):
         model = ConfigureSystems
         fields = ['name', 'company', 'ram', 'unit']
 
-
 class User_Register(forms.ModelForm):
     class Meta:
         model = User
@@ -35,8 +34,6 @@ class User_Register(forms.ModelForm):
 
 
 class AssignSystem(forms.ModelForm):
-    # system_user = forms.ModelChoiceField(queryset=User.objects.all())
-    # system = forms.ModelChoiceField(queryset=System.objects.filter(status=AVAILABLE))
     class Meta:
         model = System_User_Histories
         fields = ['system_user', 'system', 'assign_time', 'finish_time']
