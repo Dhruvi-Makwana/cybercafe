@@ -13,7 +13,7 @@
     {% block showdata %}
   <div class="registerdiv">
       <h2 class="mt-3 ps-5 ms-5">User Register </h2>
-      <form method="post">
+      <form method="post" action="{% url 'user:user_register' %}">
           {% csrf_token %}
        <div class="mt-4">
          <input type="text" class="form-control bg-white"  placeholder="First Name" name="{{ user_register.first_name.html_name }}">
@@ -34,7 +34,13 @@
 
 
       <div class="mb-4 mt-3" style="text-align:center;">
-          <button type="submit" class="btn btn-primary" value="submit" id="submit" >save</button>
+          <button type="submit" class="btn btn-primary saveuser" value="submit" id="submit" >save</button>
+          <script>
+            $('.saveuser').on("click",function()
+              {
+                alert("user created")
+              })
+          </script>
       </div>
       </form>
 </div>

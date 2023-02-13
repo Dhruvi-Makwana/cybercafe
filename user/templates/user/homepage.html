@@ -5,8 +5,10 @@
              
                 
                  <div class="addsystembtn">
+                    <a href="{%url 'user:assign_system_listing'%}" class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;">See Assign History</a>
+
                     <a href="#" class="btn add_system" style="float:right;background:dodgerblue; color:white;">Add System</a>
-                    <button class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</button>
+                    <a href="#" class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</a>
                     </div>
             <br>
         <table id="system_data" class="table table-striped display" style="width:100%">
@@ -25,11 +27,11 @@
                 
                 {% for data in object_list %}
                 <tr> <!--data.name__id}-->
-                <td id="configure_{{data.name__id}}" value={{data.name__id}}><input type="checkbox" class="checkbox"></td>
-                <td id="system_{{data.name__id}}">{{data.name__name}}</td>
-                <td id="company_{{data.name__id}}">{{data.name__company}}</td>
-                <td id="ram_{{data.name__id}}">{{data.name__ram}}</td>
-                <td id="unit_{{data.name__id}}">{{data.name__unit}}</td>
+                <td id="configure_{{data.id}}" value="{{data.name__id}}"><input type="checkbox" class="checkbox" value={{data.id}}></td>
+                <td id="system_{{data.id}}">{{data.name__name}}</td>
+                <td id="company_{{data.id}}">{{data.name__company}}</td>
+                <td id="ram_{{data.id}}">{{data.name__ram}}</td>
+                <td id="unit_{{data.id}}">{{data.name__unit}}</td>
                 <td id="status_{{data.status}}">{{data.status}}</td>
                 <td><a class="btn update_link" id="getsystem_{{data.id}}" value={{data.id}}><img src="{% static 'images/pensil.png' %}" height="20px" width="20px"></a></td>
                 </tr>
@@ -62,8 +64,15 @@
                        <div class="registerdiv">
                         <form method="post">
                             {% csrf_token %}
+                            <!-- configure id style="display:none " -->
                             <div class="mt-4">
-                                <input type="text" id="systemUpdate_id" class="form-control bg-white" style="display:none;">
+                                <input type="text" id="congigure_id" class="form-control bg-white" style="display:none ">
+                            </div>
+
+
+                            <!-- system id input-->
+                            <div class="mt-4">
+                                <input type="text" id="systemUpdate_id" class="form-control bg-white" style="display:none">
                             </div>
                            
                             
@@ -216,7 +225,6 @@
             $('#system_data').DataTable();
 
 
-
             function bindDynamicOptions(allUsers){
                 var optionStr = ""
                 for (user of allUsers){
@@ -235,39 +243,55 @@
        $('#assign').modal('show');
 });
 
+$('#submit').on("click",function()
+{
+$('#assign').modal('hide');
+});
  
+
+
 $('.add_system').on("click",function()
 {
     $('#add_system_modal').modal('show');
-    $
+    
 });
 
-   
-    
+$('#addsytemid').on("click",function()
+{
+$('#add_system_modal').modal('hide');
+});
+
+
+$('#updatebtn').on("click",function()
+{
+$('#update_system_modal').modal('hide');
+});
+
+
+
+
+
+
  $('.update_link').on("click",function()
 {
     $('#update_system_modal').modal('show');
     
     var getid = $(this).attr('value');
    
-    
+   // alert($("#configure_"+getid).attr('value'))
     var system_name = $("#system_"+getid).text()
     var company_name= $("#company_"+getid).text()
     var ram = $("#ram_"+getid).text()
     var unit = $("#unit_"+getid).text()
     var status = $("#status_"+getid).text()
+    var config_id = $("#configure_"+getid).attr('value')
 
-
+    document.getElementById("congigure_id").value = config_id
     document.getElementById("systemUpdate_id").value = getid
     document.getElementById("update_name").value = system_name
     document.getElementById("update_company_name").value = company_name
     document.getElementById("update_ram").value = ram
-    document.getElementById("update_unit").value = unit
-  
-
-
-
- 
+    document.getElementById("update_unit").value = unit 
 }); 
 
 
@@ -275,6 +299,7 @@ function updatesystemPost()
 {   
     var formData = new FormData();
     formData.append('id', $('#systemUpdate_id').val())
+    //formData.append('name__id', $('#congigure_id').val())
     formData.append('name__name', $('#update_name').val()),
     formData.append('name__company', $('#update_company_name').val()),
     formData.append('name__ram', $('#update_ram').val()),
@@ -291,10 +316,10 @@ function updatesystemPost()
               processData: false,
               contentType: false,
               success: function (){
-                  alert('Update the data.')
+                  alert('update the data')
               },
-              error: function(xhr, errmsg, err) {
-                  console.log(xhr.status + ":" + xhr.responseText)
+              error: function() {
+                  alert('enter a valid data for update.')
               }
           })
 }
@@ -332,11 +357,14 @@ function submitPost(){
         data: JSON.stringify(selectedSystems),
         contentType: 'application/json',
         success: function (data){
-            alert('Created.')
+            alert('Assign system to user')
         },
-            
+        error: function() {
+            alert('enter a valid data for assigning system.')
+        } 
     })
 }
+
 
 
 
@@ -359,11 +387,11 @@ function addsystemPost()
               processData: false,
               contentType: false,
               success: function (){
-                  alert('Created the data.')
+                  alert('System Added Successfullyy....')
               },
-              error: function(xhr, errmsg, err) {
-                  console.log(xhr.status + ":" + xhr.responseText)
-              }
+              error: function() {
+                alert('please ente a valid data for system...')
+            }
           })
 }
 

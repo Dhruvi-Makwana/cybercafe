@@ -1,6 +1,7 @@
 {% extends 'user/base.html' %}
     {% block showdata %}
 {% load static %}
+<a href="/user_register/" type="button" class="btn btn-primary" style="float:right;">Register User</a></td>
 
      <table id="display_user" class="table table-striped display" style="width:100%">
              <thead>
@@ -14,7 +15,6 @@
             <tbody>
             <tr data-id="{{data.id}}" >
             {% for data in object_list %}
-<!--            <td><button type="button" class="btn btn-primary" data-toggle="modal" id="{{data.id}}" >Assign</button></td>-->
             <td>{{data.id}}</td>
             <td>{{data.first_name}}</td>
             <td>{{data.last_name}}</td>

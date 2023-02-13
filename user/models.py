@@ -33,7 +33,7 @@ class System(models.Model):
     """
     Store systems with AVAILABILITY data.
     """
-    name = models.ForeignKey(ConfigureSystems, on_delete=models.DO_NOTHING,
+    name = models.ForeignKey(ConfigureSystems, on_delete=models.CASCADE,
                              related_name="systems")
     status = models.CharField(choices=SYSTEM_AVAILABILITY_CHOICES, max_length=100)
 
@@ -49,10 +49,10 @@ class System_User_Histories(models.Model):
     Store every user with his using system details.
     """
     system_user = models.ForeignKey(User,
-                                    on_delete=models.DO_NOTHING,
+                                    on_delete=models.CASCADE,
                                     related_name="System_User_Histories")
     system = models.ForeignKey(System,
-                               on_delete=models.DO_NOTHING,
+                               on_delete=models.CASCADE,
                                related_name="System_Histories")
     assign_time = models.DateTimeField(max_length=20)
     finish_time = models.DateTimeField(max_length=20)

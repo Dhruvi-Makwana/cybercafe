@@ -1,0 +1,24 @@
+ {% extends 'user/base.html' %}
+        {% load static %}
+              {% block showdata %}
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                      <th></th>
+                      <th> system User</th>
+                      <th> Assigned System</th>
+                      <th> Start Time </th>
+                      <th> Finish Time </th>
+                  </tr>
+                </thead>
+                     {% for data in system_list %}
+                  <tr>
+                    <td><input type="checkbox" class="checkbox" value={{data.id}}></td>
+                    <td>{{data.system_user}}</td>
+                    <td>{{data.system}}</td>   
+                    <td>{{data.assign_time}}</td>
+                    <td>{{data.finish_time}}</td>
+                  </tr>
+            {% endfor %}
+              </table>
+       {% endblock %}
