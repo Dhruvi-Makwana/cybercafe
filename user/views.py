@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render
+from user.choice import OCCUPIED
 
 from django.urls import reverse_lazy
 from .choice import AVAILABLE
@@ -11,7 +12,7 @@ from django.db.models import CharField
 from django.db.models.functions import Concat
 from django.views.generic.list import MultipleObjectMixin
 from django.contrib.auth.views import (
-    LoginView,
+    LoginView,LogoutView
 )
 
 from django.shortcuts import redirect, reverse
@@ -32,43 +33,48 @@ class GetSystemData(CreateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        if request.POST:
+        if kwargs.get('operation')== 'create':
             register_system = Register_System(request.POST)
             if register_system.is_valid():
                 System.objects.create(name=register_system.save(), status=AVAILABLE)
                 return render(request, "user/register_System.html", {"register_system": register_system})
 
         # Assign system
-        getdata = json.loads(request.body)
-        user = getdata.get('users')
-        get_list_system = getdata.get('systems')
-        s_time = getdata.get('start_time')
-        e_time = getdata.get('finish_time')
-        data_dict = {"system_user_id": user, "assign_time": s_time, "finish_time": e_time}
+            getdata = json.loads(request.body)
+            user = getdata.get('users')
+            get_list_system = getdata.get('systems')
+            s_time = getdata.get('start_time')
+            e_time = getdata.get('finish_time')
+            data_dict = {"system_user_id": user, "assign_time": s_time, "finish_time": e_time}
 
-        def createdata(system):
-            data_dict.update({"system_id": system})
-            return System_User_Histories(**data_dict)
+            # breakpoint()
 
-        result = list(map(createdata, get_list_system))
-        System_User_Histories.objects.bulk_create(result)
-        return render(request, "user/homepage.html", {"assign_system": getdata})
+            System.objects.filter(id__in=get_list_system).update(status=OCCUPIED)
+
+            def createdata(system):
+                data_dict.update({"system_id": system})
+                return System_User_Histories(**data_dict)
+
+            result = list(map(createdata, get_list_system))
+            System_User_Histories.objects.bulk_create(result)
+            return render(request, "user/homepage.html", {"assign_system": getdata})
 
         # udate data code
-        getid = request.POST.get('id')
-        update_data = System.objects.get(pk=getid)
-        sys_name = request.POST.get('name__name')
-        company_name = request.POST.get('name__company')
-        ram = request.POST.get('name__ram')
-        unit = request.POST.get('name__units')
-        status = request.POST.get('status')
-        update_data.name.name = sys_name
-        update_data.name.company = company_name
-        update_data.name.ram = int(ram)
-        update_data.name.unit = unit
-        update_data.status = status
-        update_data.name.save()
-        update_data.save()
+        elif kwargs.get('operation') == 'update':
+            getid = request.POST.get('id')
+            update_data = System.objects.get(pk=getid)
+            sys_name = request.POST.get('name__name')
+            company_name = request.POST.get('name__company')
+            ram = request.POST.get('name__ram')
+            unit = request.POST.get('name__unit')
+            status = request.POST.get('status')
+            update_data.name.name = sys_name
+            update_data.name.company = company_name
+            update_data.name.ram = int(ram)
+            update_data.name.unit = unit
+            update_data.status = status
+            update_data.name.save()
+            update_data.save()
 
     def get_user(request):
         user_data = User.objects.annotate(
@@ -136,6 +142,7 @@ class UserUpdate(UpdateView):
 class AdminLogin(LoginView):
     template_name = 'user/admin_login.html'
     authentication_form = AdminLoginForm
+
 
 
 class Add_System(CreateView):

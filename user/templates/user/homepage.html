@@ -32,7 +32,7 @@
                 <td id="company_{{data.id}}">{{data.name__company}}</td>
                 <td id="ram_{{data.id}}">{{data.name__ram}}</td>
                 <td id="unit_{{data.id}}">{{data.name__unit}}</td>
-                <td id="status_{{data.status}}">{{data.status}}</td>
+                <td id="status_{{data.id}}">{{data.status}}</td>
                 <td><a class="btn update_link" id="getsystem_{{data.id}}" value={{data.id}}><img src="{% static 'images/pensil.png' %}" height="20px" width="20px"></a></td>
                 </tr>
                 {% endfor %}
@@ -184,7 +184,7 @@
                <div> <!--method="post"-->
                    <div class="modal-body">
                        <div class="registerdiv">
-                        <form method="POST" id="add_system_formId" action="{% url 'user:homepage' %} ">
+                        <form method="POST" id="add_system_formId" action="{% url 'user:homepage' operation='create' %} ">
                             {% csrf_token %}
                               <div class="mt-4">
                                    <input type="text" id="systemname" class="form-control bg-white"  placeholder="System Name" name="{{ register_system.name.html_name }}">
@@ -234,7 +234,7 @@
             }
 
             function loadUsers(){
-                getAjax('../get_user/', bindDynamicOptions)
+                getAjax('../../get_user/', bindDynamicOptions)
              }
 
 
@@ -285,13 +285,14 @@ $('#update_system_modal').modal('hide');
     var unit = $("#unit_"+getid).text()
     var status = $("#status_"+getid).text()
     var config_id = $("#configure_"+getid).attr('value')
-
+    
     document.getElementById("congigure_id").value = config_id
     document.getElementById("systemUpdate_id").value = getid
     document.getElementById("update_name").value = system_name
     document.getElementById("update_company_name").value = company_name
     document.getElementById("update_ram").value = ram
     document.getElementById("update_unit").value = unit 
+    document.getElementById("update_status").value = status
 }); 
 
 
@@ -310,7 +311,7 @@ function updatesystemPost()
           $.ajax({
               type: 'POST',
               headers: {'X-CSRFToken': '{{ csrf_token }}'},
-              url: "/systems/",
+              url: "/systems/update/",
               data: formData,
               cache: false,
               processData: false,
@@ -318,9 +319,7 @@ function updatesystemPost()
               success: function (){
                   alert('update the data')
               },
-              error: function() {
-                  alert('enter a valid data for update.')
-              }
+             
           })
 }
 
@@ -353,7 +352,7 @@ function submitPost(){
     $.ajax({
         type: 'POST',
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
-        url: "/systems/",
+        url: "/systems/create/",
         data: JSON.stringify(selectedSystems),
         contentType: 'application/json',
         success: function (data){
@@ -381,7 +380,7 @@ function addsystemPost()
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
           $.ajax({
               type: 'POST',
-              url: "/systems/",
+              url: "/systems/create/",
               data: formData,
               cache: false,
               processData: false,
