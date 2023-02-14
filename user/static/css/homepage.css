@@ -77,3 +77,11 @@ p select
 .highlight{
     background: palegreen;
   }
+  .userlink
+  {
+    color:black;
+  }
+  .systemlink
+  {
+    color:black;
+  }

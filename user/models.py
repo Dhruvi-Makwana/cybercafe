@@ -55,7 +55,7 @@ class System_User_Histories(models.Model):
                                on_delete=models.CASCADE,
                                related_name="System_Histories")
     assign_time = models.DateTimeField(max_length=20)
-    finish_time = models.DateTimeField(max_length=20)
+    finish_time = models.DateTimeField(max_length=20,blank=True, null=True)
 
     class Meta:
         verbose_name = "System_User_Historie"

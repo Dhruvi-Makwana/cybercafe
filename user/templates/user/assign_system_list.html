@@ -1,5 +1,6 @@
  {% extends 'user/base.html' %}
         {% load static %}
+       
               {% block showdata %}
               <table class="table table-striped">
                 <thead>
@@ -9,16 +10,21 @@
                       <th> Assigned System</th>
                       <th> Start Time </th>
                       <th> Finish Time </th>
+                      <th>Duration</th>
                   </tr>
                 </thead>
                      {% for data in system_list %}
+                      {% if data.finish_time is not none %}
                   <tr>
                     <td><input type="checkbox" class="checkbox" value={{data.id}}></td>
-                    <td>{{data.system_user}}</td>
-                    <td>{{data.system}}</td>   
+                    <td><a href="{% url 'user:userlist' pk=data.system_user.id %}" class="userlink">{{data.system_user}}</a></td>
+                    <td><a href="{% url 'user:system_userlist' pk=data.system.id %}" class="systemlink">{{data.system}}</a></td>   
                     <td>{{data.assign_time}}</td>
                     <td>{{data.finish_time}}</td>
+                    <td>{{data.assign_time|timesince:data.finish_time }}</td>
+                    {% comment %} <td>{{ data.finish_time|date:"Y-m-d H:i:s"|default:""|sub:data.assign_time|time:"H:i:s" }}</td> {% endcomment %}
                   </tr>
+                  {%endif%}
             {% endfor %}
               </table>
        {% endblock %}

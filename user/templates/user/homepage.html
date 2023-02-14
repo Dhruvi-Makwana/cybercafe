@@ -5,8 +5,8 @@
              
                 
                  <div class="addsystembtn">
+                    <a class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;" id="relesemodal">Relese</a>
                     <a href="{%url 'user:assign_system_listing'%}" class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;">See Assign History</a>
-
                     <a href="#" class="btn add_system" style="float:right;background:dodgerblue; color:white;">Add System</a>
                     <a href="#" class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</a>
                     </div>
@@ -33,11 +33,53 @@
                 <td id="ram_{{data.id}}">{{data.name__ram}}</td>
                 <td id="unit_{{data.id}}">{{data.name__unit}}</td>
                 <td id="status_{{data.id}}">{{data.status}}</td>
-                <td><a class="btn update_link" id="getsystem_{{data.id}}" value={{data.id}}><img src="{% static 'images/pensil.png' %}" height="20px" width="20px"></a></td>
+                <td><a class="btn update_link" class="getsystem_{{data.id}}" value={{data.id}}><img src="{% static 'images/pensil.png' %}" height="20px" width="20px"></a></td>
                 </tr>
                 {% endfor %}
         </table>
         {% endif %}
+
+<!--
+    relese button modal
+-->
+<div class="mt-4">
+    <div class="modal fade" id="relesebtn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="exampleModalLabel">Release System
+                   </h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+
+
+               <div>
+                   <div class="modal-body">
+                       <div class="registerdiv">
+                          <b>Are you sure you want to release this system..??</b>
+                        <form method="post" action="{% url 'user:homepage' operation='release' %} ">
+                        
+                            <div class="mt-4">
+                                <input type="text" class="form-control bg-white" id="getsystemid" style="display:none;">
+                              </div>
+
+                           {% comment %} <div class="mt-4">
+                             <input type="datetime-local" class="form-control bg-white" id="end_time">
+                           </div> {% endcomment %}
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" onClick="relesepost()" class="btn btn-primary" id="releseclosemodal">Relese system</button>
+                   </div>
+                </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
 
 
 
@@ -144,14 +186,13 @@
                              </div>
 
 
-                            <div class="mt-4">
-                                <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}">
+                             <div class="mt-4">
+                                <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}" style="display:none;">
                             </div>
 
-
-                            <div class="mt-4">
+                            {% comment %} <div class="mt-4">
                                 <input type="datetime-local" class="form-control bg-white" id="finish_time"  placeholder="Finish_time" name="{{ assign_system.finish_time.html_name }}">
-                            </div>
+                            </div> {% endcomment %}
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -221,7 +262,7 @@
 
 
         <script>
-
+            
             $('#system_data').DataTable();
 
 
@@ -243,9 +284,44 @@
        $('#assign').modal('show');
 });
 
+
+
+
+
+$('#relesemodal').on("click",function()
+{
+$('#relesebtn').modal('show');
+    $('input[type=checkbox]').each(function ()
+    {
+        if (this.checked)
+         {
+            var a = $(this).attr('value');
+            document.getElementById("getsystemid").value = a
+        }
+    });
+      
+});
+
+
+
+
+
+
+const currentTime = new Date();
+  
+document.getElementById("assign_time").value = currentTime.toISOString().slice(0, -8);
+
+$('#releseclosemodal').on("click",function()
+{
+$('#relesebtn').modal('hide');
+window.location.reload();
+});
+
+
 $('#submit').on("click",function()
 {
 $('#assign').modal('hide');
+window.location.reload();
 });
  
 
@@ -259,15 +335,39 @@ $('.add_system').on("click",function()
 $('#addsytemid').on("click",function()
 {
 $('#add_system_modal').modal('hide');
+window.location.reload();
 });
 
 
 $('#updatebtn').on("click",function()
 {
 $('#update_system_modal').modal('hide');
+window.location.reload();
 });
 
 
+
+function relesepost()
+{
+      var formData = new FormData();
+        formData.append('system', $('#getsystemid').val())
+      
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+          $.ajax({
+              type: 'POST',
+              url: "/systems/release/",
+              data: formData,
+              cache: false,
+              processData: false,
+              contentType: false,
+              success: function (){
+                  alert('Relese System....')    
+              },
+              error: function() {
+                alert('there is something wrong in your code...')
+            }
+          })
+}
 
 
 

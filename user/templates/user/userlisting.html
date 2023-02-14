@@ -1,0 +1,21 @@
+{% extends 'user/base.html' %}
+{% load static %}
+      {% block showdata %}
+      <h2 style="text-align:center;">List of system used by this user</h2>
+      <br>
+        <table class="table table-striped">
+            <thead>
+                <th>System Name</th>
+                <th>Assign Time</th>
+                <th>Finish Time</th>
+            </thead>
+            {% for system_name in system%}
+            <tr>
+                <td>{{ system_name.system.name.name }}</td>
+                <td>{{system_name.assign_time}}</td>
+                <td>{{system_name.finish_time}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+      {% endblock %}

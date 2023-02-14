@@ -1,8 +1,8 @@
 import json
 
 from django.shortcuts import render
-from user.choice import OCCUPIED
-
+from user.choice import OCCUPIED,AVAILABLE
+from datetime import datetime
 from django.urls import reverse_lazy
 from .choice import AVAILABLE
 from .models import System, User, System_User_Histories, ConfigureSystems
@@ -16,7 +16,7 @@ from django.contrib.auth.views import (
 )
 
 from django.shortcuts import redirect, reverse
-from django.views.generic import ListView, CreateView, UpdateView, View
+from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 from .forms import Register_System, User_Register, AssignSystem, AdminLoginForm, AddSystem
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 
@@ -47,7 +47,6 @@ class GetSystemData(CreateView):
             e_time = getdata.get('finish_time')
             data_dict = {"system_user_id": user, "assign_time": s_time, "finish_time": e_time}
 
-            # breakpoint()
 
             System.objects.filter(id__in=get_list_system).update(status=OCCUPIED)
 
@@ -75,6 +74,17 @@ class GetSystemData(CreateView):
             update_data.status = status
             update_data.name.save()
             update_data.save()
+
+        elif kwargs.get('operation') == 'release':
+            getdata = request.POST.get('system')
+            getsystemid = System_User_Histories.objects.filter(system__id=getdata).last()
+            endtime = datetime.now()
+            if getsystemid.finish_time is None:
+                getsystemid.finish_time = endtime
+                getsystemid.system.status =AVAILABLE
+                getsystemid.system.save()
+                getsystemid.save()
+                return render(request, "user/homepage.html")
 
     def get_user(request):
         user_data = User.objects.annotate(
@@ -143,6 +153,9 @@ class AdminLogin(LoginView):
     template_name = 'user/admin_login.html'
     authentication_form = AdminLoginForm
 
+class Adminlogout(LogoutView):
+    template_name = 'user/admin_login.html'
+
 
 
 class Add_System(CreateView):
@@ -166,3 +179,19 @@ class System_assign_listing(ListView):
 
     def get_queryset(self):
         return System_User_Histories.objects.all().order_by('-id')
+
+class SystemUserList(ListView):
+    model = System_User_Histories
+    template_name = 'user/system_user_list.html'
+    context_object_name = 'userlist'
+    def get_queryset(self):
+        getsystemid = self.kwargs['pk']
+        return System_User_Histories.objects.filter(system=getsystemid).all()
+
+class UserListing(ListView):
+    model = System_User_Histories
+    template_name = 'user/userlisting.html'
+    context_object_name = 'system'
+    def get_queryset(self):
+        getsystemid = self.kwargs['pk']
+        return System_User_Histories.objects.filter(system_user=getsystemid).all()
