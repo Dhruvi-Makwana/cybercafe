@@ -2,15 +2,31 @@
         {% load static %}
              {% block showdata %}
                {% if request.user.is_superuser %}
-             
-                
+               <div class='border-success'>
+                {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li>{{message}}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
                  <div class="addsystembtn">
                     <a class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;" id="relesemodal">Relese</a>
-                    <a href="{%url 'user:assign_system_listing'%}" class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;">See Assign History</a>
+                    <a href="{% url 'user:assign_system_listing'%}" class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;">See Assign History</a>
                     <a href="#" class="btn add_system" style="float:right;background:dodgerblue; color:white;">Add System</a>
                     <a href="#" class="btn" style="float:right;background:dodgerblue; color:white; margin-right:20px;" id="link">Assign System</a>
                     </div>
             <br>
+
+            {% comment %} {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %} {% endcomment %}
+            
         <table id="system_data" class="table table-striped display" style="width:100%">
             <thead>
             <tr>
@@ -58,16 +74,12 @@
                <div>
                    <div class="modal-body">
                        <div class="registerdiv">
+                        <br>
                           <b>Are you sure you want to release this system..??</b>
                         <form method="post" action="{% url 'user:homepage' operation='release' %} ">
-                        
                             <div class="mt-4">
                                 <input type="text" class="form-control bg-white" id="getsystemid" style="display:none;">
                               </div>
-
-                           {% comment %} <div class="mt-4">
-                             <input type="datetime-local" class="form-control bg-white" id="end_time">
-                           </div> {% endcomment %}
                        </div>
                    </div>
                    <div class="modal-footer">
@@ -79,9 +91,6 @@
        </div>
    </div>
 </div>
-
-
-
 
 
 <!--
@@ -176,7 +185,7 @@
                 </div>
 
 
-                <div method="post" id="formId">
+                <div method="post" id="formId" operation='assign'>
                     <div class="modal-body">
                         <div class="registerdiv">
                             <div class="mt-4">
@@ -189,10 +198,6 @@
                              <div class="mt-4">
                                 <input type="datetime-local" class="form-control bg-white" id="assign_time"  placeholder="Assign_time" name="{{ assign_system.assign_time.html_name }}" style="display:none;">
                             </div>
-
-                            {% comment %} <div class="mt-4">
-                                <input type="datetime-local" class="form-control bg-white" id="finish_time"  placeholder="Finish_time" name="{{ assign_system.finish_time.html_name }}">
-                            </div> {% endcomment %}
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -222,11 +227,14 @@
                </div>
 
 
+
+
                <div> <!--method="post"-->
                    <div class="modal-body">
                        <div class="registerdiv">
                         <form method="POST" id="add_system_formId" action="{% url 'user:homepage' operation='create' %} ">
                             {% csrf_token %}
+
                               <div class="mt-4">
                                    <input type="text" id="systemname" class="form-control bg-white"  placeholder="System Name" name="{{ register_system.name.html_name }}">
                               </div>
@@ -259,8 +267,6 @@
 </div>
 
 
-
-
         <script>
             
             $('#system_data').DataTable();
@@ -271,7 +277,7 @@
                 for (user of allUsers){
                     optionStr += '<option class="userdata" value="' + user.id.toString() + '">' +(user.full_name) +  '</option>';
                 }
-                $("#testModalSelect").append(optionStr)
+                $("#testModalSelect").append(optionStr) 
             }
 
             function loadUsers(){
@@ -287,7 +293,7 @@
 
 
 
-
+// on click of release button modal is open 
 $('#relesemodal').on("click",function()
 {
 $('#relesebtn').modal('show');
@@ -306,22 +312,28 @@ $('#relesebtn').modal('show');
 
 
 
-
 const currentTime = new Date();
   
 document.getElementById("assign_time").value = currentTime.toISOString().slice(0, -8);
 
+
+// on modal if after click on release modal should hide 
 $('#releseclosemodal').on("click",function()
 {
 $('#relesebtn').modal('hide');
-window.location.reload();
+
+setTimeout(function(){
+    document.getElementById('welcomeDiv').style.display = "block";
+    }, 2000);
 });
 
 
+
+//while assigning system then modal is hide 
 $('#submit').on("click",function()
 {
 $('#assign').modal('hide');
-window.location.reload();
+//window.location.reload();
 });
  
 
@@ -329,24 +341,24 @@ window.location.reload();
 $('.add_system').on("click",function()
 {
     $('#add_system_modal').modal('show');
-    
+  
 });
 
 $('#addsytemid').on("click",function()
 {
 $('#add_system_modal').modal('hide');
-window.location.reload();
+//window.location.reload();
 });
 
 
 $('#updatebtn').on("click",function()
 {
 $('#update_system_modal').modal('hide');
-window.location.reload();
+//window.location.reload();
 });
 
 
-
+/* on release click system released function*/
 function relesepost()
 {
       var formData = new FormData();
@@ -360,25 +372,19 @@ function relesepost()
               cache: false,
               processData: false,
               contentType: false,
-              success: function (){
-                  alert('Relese System....')    
-              },
-              error: function() {
-                alert('there is something wrong in your code...')
-            }
+           
+             
           })
 }
 
 
-
+/* on pensil click updat a data of showing system listing function*/
 
  $('.update_link').on("click",function()
 {
     $('#update_system_modal').modal('show');
     
     var getid = $(this).attr('value');
-   
-   // alert($("#configure_"+getid).attr('value'))
     var system_name = $("#system_"+getid).text()
     var company_name= $("#company_"+getid).text()
     var ram = $("#ram_"+getid).text()
@@ -400,7 +406,6 @@ function updatesystemPost()
 {   
     var formData = new FormData();
     formData.append('id', $('#systemUpdate_id').val())
-    //formData.append('name__id', $('#congigure_id').val())
     formData.append('name__name', $('#update_name').val()),
     formData.append('name__company', $('#update_company_name').val()),
     formData.append('name__ram', $('#update_ram').val()),
@@ -425,9 +430,8 @@ function updatesystemPost()
 
 
 
-
+/* assign system send data using ajax function*/
 function submitPost(){
-
 
     let selectedSystems = {
         "systems":[],
@@ -444,7 +448,7 @@ function submitPost(){
             
             selectedSystems['systems'].push($(this).val());
            
-            $(this).closest("tr").css('background-color', 'yellow !important');
+           // $(this).closest("tr").css('background-color', 'yellow !important');
 
         }
     });
@@ -452,7 +456,7 @@ function submitPost(){
     $.ajax({
         type: 'POST',
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
-        url: "/systems/create/",
+        url: "/systems/assign/",
         data: JSON.stringify(selectedSystems),
         contentType: 'application/json',
         success: function (data){
@@ -469,7 +473,7 @@ function submitPost(){
 
 
 
-
+/* add new system using ajax function*/
 function addsystemPost()
 {
       var formData = new FormData();
@@ -485,18 +489,10 @@ function addsystemPost()
               cache: false,
               processData: false,
               contentType: false,
-              success: function (){
-                  alert('System Added Successfullyy....')
-              },
-              error: function() {
-                alert('please ente a valid data for system...')
-            }
+             
           })
 }
-
-
-
-
 </script>
        {% endblock %}
+
  

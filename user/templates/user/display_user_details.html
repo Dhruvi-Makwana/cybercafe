@@ -13,9 +13,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr data-id="{{data.id}}" >
+            <tr>
             {% for data in object_list %}
-            <td>{{data.id}}</td>
+            <td><a href="{%url 'user:user_update' pk=data.id %}" class="userlink">{{data.id}}</a></td>
             <td>{{data.first_name}}</td>
             <td>{{data.last_name}}</td>
             <td>{{data.mobile_number}}</td>

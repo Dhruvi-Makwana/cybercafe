@@ -1,5 +1,5 @@
 import json
-
+from django.contrib import messages
 from django.shortcuts import render
 from user.choice import OCCUPIED,AVAILABLE
 from datetime import datetime
@@ -14,11 +14,11 @@ from django.views.generic.list import MultipleObjectMixin
 from django.contrib.auth.views import (
     LoginView,LogoutView
 )
-
 from django.shortcuts import redirect, reverse
 from django.views.generic import ListView, CreateView, UpdateView, View, DetailView
 from .forms import Register_System, User_Register, AssignSystem, AdminLoginForm, AddSystem
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class GetSystemData(CreateView):
@@ -34,11 +34,16 @@ class GetSystemData(CreateView):
 
     def post(self, request, *args, **kwargs):
         if kwargs.get('operation')== 'create':
+            # register System
             register_system = Register_System(request.POST)
             if register_system.is_valid():
                 System.objects.create(name=register_system.save(), status=AVAILABLE)
-                return render(request, "user/register_System.html", {"register_system": register_system})
 
+                messages.success(request, 'System Register Successfully..')
+                return render(request, "user/homepage.html", {"register_system": register_system})
+
+
+        elif kwargs.get('operation') == 'assign':
         # Assign system
             getdata = json.loads(request.body)
             user = getdata.get('users')
@@ -49,7 +54,7 @@ class GetSystemData(CreateView):
 
 
             System.objects.filter(id__in=get_list_system).update(status=OCCUPIED)
-
+            messages.success(request,'Assiend system successfully...')
             def createdata(system):
                 data_dict.update({"system_id": system})
                 return System_User_Histories(**data_dict)
@@ -58,7 +63,7 @@ class GetSystemData(CreateView):
             System_User_Histories.objects.bulk_create(result)
             return render(request, "user/homepage.html", {"assign_system": getdata})
 
-        # udate data code
+        # update system code
         elif kwargs.get('operation') == 'update':
             getid = request.POST.get('id')
             update_data = System.objects.get(pk=getid)
@@ -69,11 +74,12 @@ class GetSystemData(CreateView):
             status = request.POST.get('status')
             update_data.name.name = sys_name
             update_data.name.company = company_name
-            update_data.name.ram = int(ram)
+            update_data.name.ram = ram
             update_data.name.unit = unit
             update_data.status = status
             update_data.name.save()
             update_data.save()
+            messages.success(request, 'Updated data..')
 
         elif kwargs.get('operation') == 'release':
             getdata = request.POST.get('system')
@@ -84,6 +90,7 @@ class GetSystemData(CreateView):
                 getsystemid.system.status =AVAILABLE
                 getsystemid.system.save()
                 getsystemid.save()
+                messages.success(request,'Release System...')
                 return render(request, "user/homepage.html")
 
     def get_user(request):
@@ -143,7 +150,7 @@ class SystemUpdate(UpdateView):
 
 
 class UserUpdate(UpdateView):
-    success_url = "../../showuser/"
+    success_url = "../../show_user/"
     model = User
     fields = ['first_name', 'last_name', 'email']
     template_name = "user/user_update.html"

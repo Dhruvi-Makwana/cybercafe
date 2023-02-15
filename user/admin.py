@@ -12,13 +12,13 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(ConfigureSystems)
 class ConfigureSystemsAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'company', 'purchase_date', 'ram', 'unit')
-    list_per_page = 2000
+    list_per_page = 20
 
 
 @admin.register(System)
 class Systemadmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'status')
-    list_per_page = 200
+    list_per_page = 20
 
 
 @admin.register(System_User_Histories)

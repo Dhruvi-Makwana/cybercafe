@@ -8,12 +8,14 @@
                 <th>System Name</th>
                 <th>Assign Time</th>
                 <th>Finish Time</th>
+                <th>Duration</th>
             </thead>
-            {% for system_name in system%}
+            {% for system_name in system %}
             <tr>
-                <td>{{ system_name.system.name.name }}</td>
+                <td><a href="{% url 'user:system_userlist' pk=system_name.system.id %}" class="userlink"> {{ system_name.system.name.name }}</a></td>
                 <td>{{system_name.assign_time}}</td>
                 <td>{{system_name.finish_time}}</td>
+                <td>{{system_name.assign_time|timesince:system_name.finish_time }}</td>
             </tr>
             {% endfor %}
         </table>
