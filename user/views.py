@@ -37,11 +37,11 @@ class GetSystemData(CreateView):
             # register System
             register_system = Register_System(request.POST)
             if register_system.is_valid():
+
                 System.objects.create(name=register_system.save(), status=AVAILABLE)
-
-                messages.success(request, 'System Register Successfully..')
-                return render(request, "user/homepage.html", {"register_system": register_system})
-
+                # messages.success(self.request, 'System Register Successfully..')
+                # return render(request, "user/homepage.html", {"register_system": register_system})
+                return JsonResponse({'message': 'Form data processed successfully'})
 
         elif kwargs.get('operation') == 'assign':
         # Assign system
@@ -54,7 +54,7 @@ class GetSystemData(CreateView):
 
 
             System.objects.filter(id__in=get_list_system).update(status=OCCUPIED)
-            messages.success(request,'Assiend system successfully...')
+            # messages.success(request,'Assiend system successfully...')
             def createdata(system):
                 data_dict.update({"system_id": system})
                 return System_User_Histories(**data_dict)
@@ -62,7 +62,7 @@ class GetSystemData(CreateView):
             result = list(map(createdata, get_list_system))
             System_User_Histories.objects.bulk_create(result)
             return render(request, "user/homepage.html", {"assign_system": getdata})
-
+            # return JsonResponse({'message': 'Assign System Successfully..'})
         # update system code
         elif kwargs.get('operation') == 'update':
             getid = request.POST.get('id')
@@ -79,7 +79,8 @@ class GetSystemData(CreateView):
             update_data.status = status
             update_data.name.save()
             update_data.save()
-            messages.success(request, 'Updated data..')
+            messages.success(request, 'Update the data..')
+            return JsonResponse({'message': 'Update data....'})
 
         elif kwargs.get('operation') == 'release':
             getdata = request.POST.get('system')
@@ -90,8 +91,8 @@ class GetSystemData(CreateView):
                 getsystemid.system.status =AVAILABLE
                 getsystemid.system.save()
                 getsystemid.save()
-                messages.success(request,'Release System...')
-                return render(request, "user/homepage.html")
+                # messages.success(request,'Release System successfuly.....')
+                return JsonResponse({'message': 'Release System...'})
 
     def get_user(request):
         user_data = User.objects.annotate(

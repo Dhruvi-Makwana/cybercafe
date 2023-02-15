@@ -4,12 +4,12 @@
                {% if request.user.is_superuser %}
                <div class='border-success'>
                 {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                                <li>{{message}}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li>{{message}}</li>
+                        {% endfor %}
+                    </ul>
+                 {% endif %}
                 </div>
                  <div class="addsystembtn">
                     <a class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;" id="relesemodal">Relese</a>
@@ -372,7 +372,9 @@ function relesepost()
               cache: false,
               processData: false,
               contentType: false,
-           
+              success: function (data) {
+                alert(data.message);
+            }
              
           })
 }
@@ -421,9 +423,9 @@ function updatesystemPost()
               cache: false,
               processData: false,
               contentType: false,
-              success: function (){
-                  alert('update the data')
-              },
+              success: function (data) {
+                alert(data.message);
+}
              
           })
 }
@@ -489,6 +491,9 @@ function addsystemPost()
               cache: false,
               processData: false,
               contentType: false,
+               success: function (data) {
+                    alert(data.message);
+    }
              
           })
 }
