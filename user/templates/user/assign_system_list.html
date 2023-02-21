@@ -2,10 +2,13 @@
         {% load static %}
        
               {% block showdata %}
+              {% if request.user.is_superuser %}
+
               <table class="table table-striped">
+               
                 <thead>
                   <tr>
-                      <th></th>
+                      {% comment %} <th></th> {% endcomment %}
                       <th> system User</th>
                       <th> Assigned System</th>
                       <th> Start Time </th>
@@ -13,10 +16,10 @@
                       <th>Duration</th>
                   </tr>
                 </thead>
-                     {% for data in system_list %}
-                      {% if data.finish_time is not none %}
+                {% for data in system_list %}
+                {% if data.finish_time is not none %}
                   <tr>
-                    <td><input type="checkbox" class="checkbox" value={{data.id}}></td>
+                    {% comment %} <td><input type="checkbox" class="checkbox" value={{data.id}}></td> {% endcomment %}
                     <td><a href="{% url 'user:userlist' pk=data.system_user.id %}" class="userlink">{{data.system_user}}</a></td>
                     <td><a href="{% url 'user:system_userlist' pk=data.system.id %}" class="systemlink">{{data.system}}</a></td>   
                     <td>{{data.assign_time}}</td>
@@ -25,6 +28,12 @@
                     {% comment %} <td>{{ data.finish_time|date:"Y-m-d H:i:s"|default:""|sub:data.assign_time|time:"H:i:s" }}</td> {% endcomment %}
                   </tr>
                   {%endif%}
+
+                {% empty %}
+                <h2 class="text-success">There is no history yet for assign system.</h2>
             {% endfor %}
               </table>
+              {% endif %}
+
        {% endblock %}
+			  

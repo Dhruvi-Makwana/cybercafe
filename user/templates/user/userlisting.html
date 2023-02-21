@@ -1,6 +1,7 @@
 {% extends 'user/base.html' %}
 {% load static %}
       {% block showdata %}
+        {% if request.user.is_superuser %}
       <h2 style="text-align:center;">List of system used by this user</h2>
       <br>
         <table class="table table-striped">
@@ -19,5 +20,6 @@
             </tr>
             {% endfor %}
         </table>
-
+  {% endif %}
       {% endblock %}
+    

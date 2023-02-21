@@ -2,15 +2,13 @@
         {% load static %}
              {% block showdata %}
                {% if request.user.is_superuser %}
-               <div class='border-success'>
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <li>{{message}}</li>
-                        {% endfor %}
-                    </ul>
-                 {% endif %}
+              
+                <div class="output">
+
                 </div>
+
+
+
                  <div class="addsystembtn">
                     <a class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;" id="relesemodal">Relese</a>
                     <a href="{% url 'user:assign_system_listing'%}" class="btn" style="float:right;background:dodgerblue; color:white;margin-left:20px;">See Assign History</a>
@@ -19,14 +17,8 @@
                     </div>
             <br>
 
-            {% comment %} {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-            {% endif %} {% endcomment %}
-            
+
+
         <table id="system_data" class="table table-striped display" style="width:100%">
             <thead>
             <tr>
@@ -322,9 +314,7 @@ $('#releseclosemodal').on("click",function()
 {
 $('#relesebtn').modal('hide');
 
-setTimeout(function(){
-    document.getElementById('welcomeDiv').style.display = "block";
-    }, 2000);
+
 });
 
 
@@ -373,7 +363,30 @@ function relesepost()
               processData: false,
               contentType: false,
               success: function (data) {
-                alert(data.message);
+               
+                if(data.release_error_message)  
+                {
+               
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.release_error_message+ "</p>");
+                    }, 1000);
+                }
+                else if(data.message)
+                {
+               
+                setTimeout(function () {
+                    $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
+                    }, 1000);
+                }
+                else if(data.select_system_err)
+                {
+               
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.select_system_err + "</p>");
+                    }, 1000);
+                }
+
+               
             }
              
           })
@@ -424,8 +437,23 @@ function updatesystemPost()
               processData: false,
               contentType: false,
               success: function (data) {
-                alert(data.message);
-}
+                if(data.message)
+                {
+                        //alert(data.message);
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.message + "</p>");
+                    }, 1000);
+                     
+                    
+                }
+                else
+                {
+                    setTimeout(function () {
+                        $('.output').html("<p class='textsuccess'>" + data.update_message + "</p>");
+                        }, 1000);
+                    //alert(data.update_message)
+                }
+         }
              
           })
 }
@@ -439,7 +467,7 @@ function submitPost(){
         "systems":[],
         "users": $('#testModalSelect').val(),
         "start_time": $('#assign_time').val(),
-        "finish_time": $('#finish_time').val(),
+        
         
     }; 
 
@@ -449,8 +477,6 @@ function submitPost(){
          {
             
             selectedSystems['systems'].push($(this).val());
-           
-           // $(this).closest("tr").css('background-color', 'yellow !important');
 
         }
     });
@@ -462,16 +488,36 @@ function submitPost(){
         data: JSON.stringify(selectedSystems),
         contentType: 'application/json',
         success: function (data){
-            alert('Assign system to user')
+            //alert(data.message)
+           
+            if(data.message){
+             
+                setTimeout(function () {
+                    $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
+                    }, 1000);
+                }  
+            else if(data.select_system_err){
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.select_system_err + "</p>");
+                    }, 1000);
+                }  
+            else if(data.occupied_error){
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.occupied_error + "</p>");
+                    }, 1000);
+                }
+            else if(data.status_error){
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.status_error + "</p>");
+                    }, 1000);
+                }
+            
         },
         error: function() {
             alert('enter a valid data for assigning system.')
         } 
     })
 }
-
-
-
 
 
 
@@ -491,9 +537,22 @@ function addsystemPost()
               cache: false,
               processData: false,
               contentType: false,
-               success: function (data) {
-                    alert(data.message);
-    }
+               success: function (data) 
+               {
+                    if(data.message){
+                    //alert(data.message);
+                    setTimeout(function () {
+                        $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
+                        }, 1000);
+                    }    
+                    if(data.add_error_msg){
+                        //alert(data.message);
+                        setTimeout(function () {
+                            $('.output').html("<p class='texterror'>" + data.add_error_msg + "</p>");
+                            }, 1000);
+                        }      
+                     
+            }
              
           })
 }

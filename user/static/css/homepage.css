@@ -85,3 +85,13 @@ p select
   {
     color:black;
   }
+  .textsuccess
+  {
+    color:darkgreen;
+    font-size: larger;
+  }
+  .texterror
+  {
+    color:red;
+    font-size: larger;
+  }
