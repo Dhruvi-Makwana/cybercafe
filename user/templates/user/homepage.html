@@ -370,6 +370,9 @@ function relesepost()
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.release_error_message+ "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }
                 else if(data.message)
                 {
@@ -377,6 +380,9 @@ function relesepost()
                 setTimeout(function () {
                     $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }
                 else if(data.select_system_err)
                 {
@@ -384,6 +390,9 @@ function relesepost()
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.select_system_err + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }
 
                
@@ -443,6 +452,9 @@ function updatesystemPost()
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.message + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                      
                     
                 }
@@ -450,7 +462,11 @@ function updatesystemPost()
                 {
                     setTimeout(function () {
                         $('.output').html("<p class='textsuccess'>" + data.update_message + "</p>");
-                        }, 1000);
+                        }, 500);
+
+                        setTimeout(function(){
+                            $('.output').remove();
+                          }, 3000);
                     //alert(data.update_message)
                 }
          }
@@ -495,21 +511,33 @@ function submitPost(){
                 setTimeout(function () {
                     $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }  
             else if(data.select_system_err){
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.select_system_err + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }  
             else if(data.occupied_error){
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.occupied_error + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }
             else if(data.status_error){
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.status_error + "</p>");
                     }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
                 }
             
         },
@@ -544,12 +572,18 @@ function addsystemPost()
                     setTimeout(function () {
                         $('.output').html("<p class='textsuccess'>" + data.message + "</p>");
                         }, 1000);
+                        setTimeout(function(){
+                            $('.output').remove();
+                          }, 3000);
                     }    
                     if(data.add_error_msg){
                         //alert(data.message);
                         setTimeout(function () {
                             $('.output').html("<p class='texterror'>" + data.add_error_msg + "</p>");
                             }, 1000);
+                            setTimeout(function(){
+                                $('.output').remove();
+                              }, 3000);
                         }      
                      
             }
