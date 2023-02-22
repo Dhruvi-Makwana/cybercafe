@@ -42,7 +42,6 @@ class GetSystemData(LoginRequiredMixin, CreateView):
                 System.objects.create(name=register_system.save(), status=AVAILABLE)
                 return JsonResponse({'message': 'Syatem data added successfully'})
             else:
-
                 return JsonResponse({'add_error_msg': 'Add valid data to add system..'})
 
 
@@ -112,6 +111,8 @@ class GetSystemData(LoginRequiredMixin, CreateView):
                 while getting the data if system is not selected and click on release button it shows error
                 """
                 return JsonResponse({'select_system_err': 'Select only those system which is occupied...'})
+
+
             getsystemid = System_User_Histories.objects.filter(system__id=getdata).last()
             endtime = datetime.now()
 
@@ -139,9 +140,10 @@ class GetSystemData(LoginRequiredMixin, CreateView):
                              Value(' ) '), output_field=CharField())).values('id', 'full_name')
         return JsonResponse({'data': list(user_data)}, safe=False)
 
-
 class UserData(LoginRequiredMixin, ListView):
-
+    """
+    showing list of all the user
+    """
     template_name = "user/display_user_details.html"
     model = User
 
