@@ -359,6 +359,7 @@ function relesepost()
               type: 'POST',
               url: "/systems/release/",
               data: formData,
+              
               cache: false,
               processData: false,
               contentType: false,
@@ -389,6 +390,17 @@ function relesepost()
                
                 setTimeout(function () {
                     $('.output').html("<p class='texterror'>" + data.select_system_err + "</p>");
+                    }, 1000);
+                    setTimeout(function(){
+                        $('.output').remove();
+                      }, 3000);
+                }
+
+                else if(data.none_error_message)
+                {
+               
+                setTimeout(function () {
+                    $('.output').html("<p class='texterror'>" + data.none_error_message + "</p>");
                     }, 1000);
                     setTimeout(function(){
                         $('.output').remove();

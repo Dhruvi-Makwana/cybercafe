@@ -115,7 +115,8 @@ class GetSystemData(LoginRequiredMixin, CreateView):
 
             getsystemid = System_User_Histories.objects.filter(system__id=getdata).last()
             endtime = datetime.now()
-
+            if getsystemid is None:
+                return JsonResponse({'none_error_message': 'This system is not assigned to any user yet....'})
             if getsystemid.system.status == AVAILABLE or getsystemid.system.status == MAINTENANCE or getsystemid.system.status == INACTIVE:
                 """
                 only occupied system can release if not then shows error
